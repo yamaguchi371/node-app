@@ -67,11 +67,12 @@ function response_index(request,response){
 // index表示の作成
 function write_index(request, response) {
     var msg = "※伝言を表示する。"
-    var coolie_data = getCookie('msg', request);
+    var cookie_data = getCookie('msg', request);
     var content = ejs.render(index_page, {
         title:"Index",
         content: msg,
         data: data,
+        cookie_data:cookie_data,
     });
     response.writeHead(200, {'Content-Type': 'text/html'});
     response.write(content);
@@ -79,6 +80,23 @@ function write_index(request, response) {
 }
 
 // クッキーの値を設定
+function setCookie(key, value, response) {
+    var cookie = escape(value);
+    response.setHeader('Set-Cookie', [key + '=' + cookie]);
+}
+// クッキーの値を取得
+function getCookie(key, request) {
+    var cookie_data = request.headers.cookie != undefined ?
+        request.headers.cookie : '';
+    var data = cookie_data.split(';');
+    for(var i in data){
+        if (data[i].trim().startsWith(key + '=')){
+            var result = data[i].trim().substring(key.length + 1);
+            return unescape(result);
+        }
+    }
+    return '';
+}
 
 var data2 = {
     'Taro' : ['taro@yamada', '09-999-999', 'Tokyo'],
